@@ -1,7 +1,5 @@
 import type {Request, Response} from "express";
 import {prisma} from "../lib/prisma";
-import e from "cors";
-
 export const createTask = async(req: Request, res: Response) => {
     let statusCode = 201;
     let newTask;
