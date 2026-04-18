@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import taskRoutes from "./routes/task.routes";
+import tagRoutes from "./routes/tag.routes";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.get("/api/health", (req, res) => {
 
 // Routes
 app.use("/api/v1/tasks", taskRoutes);
+app.use("/api/v1/tags", tagRoutes);
 
 // 404 handler
 app.use((_req, res) => {
