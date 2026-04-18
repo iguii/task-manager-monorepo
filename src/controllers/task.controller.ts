@@ -27,7 +27,7 @@ export const readTasks = async (req: Request, res: Response) => {
 }
 
 export const updateTask = async (req: Request, res: Response) => {
-    const id = parseInt(<string>req.params.taskId);
+    const id = parseInt(<string>req.params.id);
     let statusCode = 200;
     let updatedTask;
 
