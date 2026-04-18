@@ -1,0 +1,181 @@
+opencollection: 1.0.0
+info:
+  name: Task Manager Diplomado FullStack 2026 - Modulo 1
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ''
+      port: ''
+      auth:
+        username: ''
+        password: ''
+      bypassProxy: ''
+items:
+  - info:
+      name: task
+      type: folder
+      seq: 6
+    request:
+      auth: inherit
+    items:
+      - info:
+          name: Delete Task
+          type: http
+          seq: 5
+        http:
+          method: DELETE
+          url: http://localhost:3000/api/v1/tasks/420
+          auth: inherit
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+      - info:
+          name: Create Task
+          type: http
+          seq: 2
+        http:
+          method: POST
+          url: http://localhost:3000/api/v1/tasks
+          body:
+            type: json
+            data: |-
+              {
+                "title": "Nombre de la Tarea", /// must be UNIQUE
+                "description": "Descripcion corta de la tarea",
+                "tags": ["Etiqueta UNO", "QUATRO"]
+              }
+          auth: inherit
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+      - info:
+          name: Get All Tasks
+          type: http
+          seq: 2
+        http:
+          method: GET
+          url: http://localhost:3000/api/v1/tasks
+          auth: inherit
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+      - info:
+          name: Edit Task
+          type: http
+          seq: 3
+        http:
+          method: PUT
+          url: http://localhost:3000/api/v1/tasks/<TASK_ID>
+          body:
+            type: json
+            data: |-
+              {
+                "title": "Nombre de la tarea EDITADO",
+                "description": "Descripcion de la tarea EDITADA"
+              }
+          auth: inherit
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+      - info:
+          name: Toggle Task
+          type: http
+          seq: 4
+        http:
+          method: PATCH
+          url: http://localhost:3000/api/v1/tasks/<Task_ID>/toggle
+          auth: inherit
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+  - info:
+      name: tag
+      type: folder
+      seq: 2
+    request:
+      auth: inherit
+    items:
+      - info:
+          name: Get All Tags
+          type: http
+          seq: 1
+        http:
+          method: GET
+          url: http://localhost:3000/api/v1/tags
+          auth: inherit
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+      - info:
+          name: Create Tag
+          type: http
+          seq: 2
+        http:
+          method: POST
+          url: http://localhost:3000/api/v1/tags
+          body:
+            type: json
+            data: |-
+              {
+                "name": "Nombre de la etiqueta"
+              }
+          auth: inherit
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+      - info:
+          name: Update Tag
+          type: http
+          seq: 3
+        http:
+          method: PUT
+          url: http://localhost:3000/api/v1/tags/8
+          body:
+            type: json
+            data: |-
+              {
+                "name": "Nombre de la etiquita EDITADO"
+              }
+          auth: inherit
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+      - info:
+          name: Delete Tag
+          type: http
+          seq: 4
+        http:
+          method: DELETE
+          url: http://localhost:3000/api/v1/tags/<TAG_ID>
+          auth: inherit
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+bundled: true
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
+    exportedAt: '2026-04-18T21:24:26.229Z'
+    exportedUsing: Bruno
