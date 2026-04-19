@@ -1,5 +1,4 @@
-import './App.css'
-import TasksPage from "./Components/TasksPage.tsx";
+import TasksPage from "./components/TasksPage.tsx";
 
 function App() {
   return <TasksPage />
