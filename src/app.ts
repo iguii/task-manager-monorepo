@@ -3,6 +3,7 @@ import cors from "cors";
 
 import taskRoutes from "./routes/task.routes";
 import tagRoutes from "./routes/tag.routes";
+import authRoutes from "./routes/auth.routes";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get("/api/health", (req, res) => {
 // Routes
 app.use("/api/v1/tasks", taskRoutes);
 app.use("/api/v1/tags", tagRoutes);
+app.use("/api/v1/auth", authRoutes);
 
 // 404 handler
 app.use((_req, res) => {
