@@ -1,16 +1,12 @@
-import axios from 'axios';
+import api from "./api";
 
-const API = axios.create({
-    baseURL: 'http://localhost:3000/api/v1',
-})
+export const getTasks = () => api.get('/tasks');
 
-export const getTasks = () => API.get('/tasks');
+export const createTask = (title: string, desc: string) => api.post("/tasks", { title, description: desc });
 
-export const createTask = (title: string, desc: string) => API.post("/tasks", { title, description: desc });
+export const toggleTask = (id: number) => api.patch(`tasks/${id}/toggle`);
 
-export const toggleTask = (id: number) => API.patch(`tasks/${id}/toggle`);
+export const updateTask = (id: number) => api.delete(`tasks/${id}`);
 
-export const updateTask = (id: number) => API.delete(`tasks/${id}`);
-
-export const deleteTask = (id: number) => API.delete(`tasks/${id}`);
+export const deleteTask = (id: number) => api.delete(`tasks/${id}`);
 

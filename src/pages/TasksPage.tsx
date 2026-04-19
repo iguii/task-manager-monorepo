@@ -1,11 +1,17 @@
 import react, {useEffect} from 'react';
-import {TaskInput} from "./TaskInput";
-import TaskInputBtn from "./TaskInputBtn";
-import TaskList from "./TaskList";
+import {TaskInput} from "../components/TaskInput.tsx";
+import TaskInputBtn from "../components/TaskInputBtn.tsx";
+import TaskList from "../components/TaskList.tsx";
 import type {Task} from "../types/Task.ts";
 import {createTask, deleteTask, getTasks, toggleTask} from "../services/taskService.ts";
+import {useNavigate} from "react-router-dom";
 
 const TasksPage = () => {
+    const navigate = useNavigate();
+
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : null;
+
     const [text, setText] = react.useState("");
     const [description, setDescription] = react.useState("");
     const [tasks, setTasks] = react.useState<Task[]>([]);
@@ -83,6 +89,12 @@ const TasksPage = () => {
         }
     }
 
+    const handleSignOut = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login", { replace: true });
+    }
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -90,15 +102,26 @@ const TasksPage = () => {
     return (
         <main className="min-h-screen bg-zinc-950 text-zinc-100">
             <div className="mx-auto max-w-7xl px-6 py-10">
-                <header className="mb-10">
-                    <p className="mb-2 text-sm uppercase tracking- text-cyan-400">
-                        Fullstack Final Project
-                    </p>
-                    <h1 className="text-4xl font-bold tracking-tight">
-                        Organiza tus tareas en un espacio estilo kanban.
-                    </h1>
-                </header>
+                <header className="mb-10 flex items-start justify-between gap-4">
+                    <div>
+                        <p className="mb-2 text-sm uppercase text-cyan-400">
+                            Fullstack Final Project
+                        </p>
+                        <h1 className="text-4xl font-bold tracking-tight">
+                            Hola, {user.name}
+                        </h1>
+                        <h2 className="text-2xl font-bold tracking-tight">
+                            Organiza tus tareas en un espacio estilo kanban.
+                        </h2>
+                    </div>
 
+                    <button
+                        onClick={handleSignOut}
+                        className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-200 shadow-lg transition hover:border-rose-400 hover:text-rose-300"
+                    >
+                        Cerrar Sesión
+                    </button>
+                </header>
                 <section className="mb-8 grid gap-4 sm:grid-cols-3">
                     <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-5 shadow-xl">
                         <p className="text-sm text-zinc-400">Tareas Totales</p>
