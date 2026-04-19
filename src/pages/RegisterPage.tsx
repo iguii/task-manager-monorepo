@@ -31,7 +31,7 @@ const RegisterPage = () => {
                 <div className="space-y-4">
                     <input
                         type="text"
-                        placeholder="Name"
+                        placeholder="Nombre"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         className="w-full rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-zinc-100 outline-none focus:border-cyan-400"
@@ -39,7 +39,7 @@ const RegisterPage = () => {
 
                     <input
                         type="email"
-                        placeholder="Nombre"
+                        placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-zinc-100 outline-none focus:border-cyan-400"
