@@ -1,148 +1,169 @@
 import type {Request, Response} from "express";
 import {prisma} from "../lib/prisma";
 
-//TODO: modify logic to add tags to tasks
-export const createTask = async(req: Request, res: Response) => {
-    let statusCode = 201;
-    let newTask;
-
+export const createTask = async (req: Request, res: Response) => {
     try {
-        const { title, description, tags = [] } = req.body;
+        const userId = req.user!.userId;
+        const {title, description, tags = []} = req.body;
 
-        // clean tags
-        const cleanedTags = [...new Set(
-            tags.map((tag:any) => tag.trim().toLowerCase())
-                .filter((tag:any) => tag.length > 0)
-        )]
-
-        // create all non-existing tags
-        for (const tagName of cleanedTags) {
-            await prisma.tag.upsert({
-               where: { name: <string>tagName },
-               update: {},
-               create: { name: <string>tagName },
-           })
+        if (!title?.trim()) {
+            return res.status(400).json({message: "Title is required"});
         }
 
-        newTask = await prisma.task.create({
+        const cleanedTags = Array.isArray(tags)
+            ? [...new Set(
+                tags
+                    .map((tag: string) => tag.trim().toLowerCase())
+                    .filter((tag: string) => tag.length > 0)
+            )]
+            : [];
+
+        for (const tagName of cleanedTags) {
+            await prisma.tag.upsert({
+                where: {name: tagName},
+                update: {},
+                create: {name: tagName},
+            });
+        }
+
+        const newTask = await prisma.task.create({
             data: {
                 title: title.trim(),
-                description: description.trim(),
+                description: description?.trim(),
+                userId,
                 tags: {
-                    connect: cleanedTags.map((tagName: any) => ({name: tagName})),
-                }
+                    connect: cleanedTags.map((name: string) => ({name})),
+                },
             },
             include: {
                 tags: true,
             },
         });
-    }catch (err: any) {
-        statusCode = 500;
-        newTask = {
-            message: `${err.message}`,
-        }
-    }
 
-    return res.status(statusCode).json(newTask);
-}
+        return res.status(201).json(newTask);
+    } catch (e: any) {
+        return res.status(500).json({message: e.message});
+    }
+};
 
 export const readTasks = async (req: Request, res: Response) => {
-    const tasks = await prisma.task.findMany({
-        include: {
-            tags: true,
-        }
-    });
+    try {
+        const userId = req.user!.userId;
 
-    return res.status(200).json(tasks);
+        const tasks = await prisma.task.findMany({
+            where: {userId: userId},
+            include: {tags: true},
+            orderBy: {createdAt: "desc"}
+        });
+
+        return res.status(200).json(tasks);
+    } catch (e: any) {
+        return res.status(500).json({message: e.message});
+    }
 }
 
 export const updateTask = async (req: Request, res: Response) => {
-    const id = parseInt(<string>req.params.id);
-    let statusCode = 200;
-    let updatedTask;
+    const id = Number(req.params.id);
 
-    try{
-        const {tags = [], ...rest} = req.body;
+    try {
+        const userId = req.user!.userId;
+        const {tags, ...rest} = req.body;
 
-        const found = await prisma.task.findUnique({ where: { id: id } });
+        const found = await prisma.task.findFirst({
+            where: {
+                id: id,
+                userId: userId
+            }
+        });
+        if (!found) return res.status(404).json({message: "Task not found"});
 
-        if(!found) {
-            statusCode = 404;
-            updatedTask = { message: `Task not found` };
-        } else {
-            // clean tags
-            const cleanedTags = [...new Set(
-                tags.map((tag: string) => tag.trim().toLowerCase())
-                    .filter((tag: any) => tag.length > 0)
-            )];
+        let tagsData = {};
 
+        if (Array.isArray(tags)) {
+            const cleanedTags = [...new Set(tags.map((tag: any) => tag.trim().toLowerCase()).filter((tag: any) => tag.length > 0))];
 
-            // create all non-existing tags
             for (const tagName of cleanedTags) {
                 await prisma.tag.upsert({
-                    where: {name: <string>tagName},
+                    where: {name: tagName},
                     update: {},
-                    create: {name: <string>tagName},
-                })
+                    create: {name: tagName},
+                });
             }
 
-            updatedTask = await prisma.task.update({
-                where: {id: id},
-                data: {
-                    ...rest,
-                    tags: {
-                        set: cleanedTags.map((name: any) => ({name}))
-                    },
-                },
-                include: {
-                    tags: true,
+            tagsData = {
+                tags: {
+                    set: cleanedTags.map((name: string) => ({name})),
                 }
-            });
+            };
         }
-    }catch (e: any) {
-        statusCode = 500;
-        updatedTask = { message: `${e.message}` };
-    }
 
-    return res.status(statusCode).json(updatedTask);
+        const updatedTask = await prisma.task.update({
+            where: {id: id},
+            data: {
+                ...rest,
+                ...tagsData,
+            },
+            include: {
+                tags: true
+            },
+        });
+
+        return res.status(200).json(updatedTask);
+    } catch (e: any) {
+        return res.status(500).json({message: e.message});
+    }
 }
 
 export const deleteTask = async (req: Request, res: Response) => {
-    const id = parseInt(<string>req.params.id);
-    let statusCode = 200;
-    let task;
+    const id = Number(req.params.id);
 
-    try{
-        task = await prisma.task.findUnique({ where: { id: id} });
-        if (!task) {
-            statusCode = 404;
-        } else await prisma.task.delete({ where: { id: id } });
+    try {
+        const userId = req.user!.userId;
+
+        const found = await prisma.task.findFirst({
+            where: {id, userId},
+        });
+
+        if (!found) {
+            return res.status(404).json({message: "Task not found"});
+        }
+
+        await prisma.task.delete({
+            where: {id},
+        });
+
+        return res.status(200).json({message: "Task deleted"});
     } catch (e: any) {
-        statusCode = 500;
-        task = { message: `${e.message}` };
+        return res.status(500).json({message: e.message});
     }
-
-    return res.status(statusCode).json(task);
-}
-
+};
 
 export const toggleTask = async (req: Request, res: Response) => {
-    const id = parseInt(<string>req.params.id);
-    let statusCode = 200;
-    let task;
+    const id = Number(req.params.id);
 
-    try{
-        task = await prisma.task.findUnique({ where: { id: id } });
-        if (!task) {
-            statusCode = 404;
-            task = { message: "Task not found" };
-        } else task = await prisma.task.update({
-                where: { id: id },
-                data: { completed: !task.completed },
+    try {
+        const userId = req.user!.userId;
+
+        const found = await prisma.task.findFirst({
+            where: {id, userId},
         });
+
+        if (!found) {
+            return res.status(404).json({message: "Task not found"});
+        }
+
+        const updated = await prisma.task.update({
+            where: {id},
+            data: {
+                completed: !found.completed,
+            },
+            include: {
+                tags: true,
+            },
+        });
+
+        return res.status(200).json(updated);
     } catch (e: any) {
-        statusCode = 500;
-        task = { message: `${e.message}` };
+        return res.status(500).json({message: e.message});
     }
-    return res.status(statusCode).json(task);
-}
+};
