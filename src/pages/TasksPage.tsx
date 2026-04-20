@@ -153,27 +153,6 @@ const TasksPage = () => {
                     </div>
                 </section>
 
-                <section className="mb-8">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <h2 className="text-xl font-semibold text-zinc-100">
-                            Tus Tareas
-                        </h2>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-zinc-500">Filtrar por etiqueta:</span>
-                            <input
-                                type="text"
-                                value={filterTag}
-                                onChange={(e) => setFilterTag(e.target.value)}
-                                placeholder="ej. urgente, trabajo..."
-                                className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-1.5 text-sm text-zinc-100 outline-none transition focus:border-cyan-400/50"
-                            />
-                            {filterTag && (
-                                <button onClick={() => setFilterTag("")} className="text-xs text-rose-400 hover:underline">Limpiar Filtro</button>
-                            )}
-                        </div>
-                    </div>
-                </section>
-
                 <section className="mb-10 rounded-3xl border border-zinc-800 bg-zinc-900/80 p-6 shadow-2xl">
                     <h2 className="mb-4 text-xl font-semibold text-zinc-100">
                         Crear Tarea
@@ -193,6 +172,27 @@ const TasksPage = () => {
                         <TaskInputBtn
                             addTask={() => addTask(text, description, tags)}
                         />
+                    </div>
+                </section>
+
+                <section className="mb-8">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <h2 className="text-xl font-semibold text-zinc-100">
+                            Tus Tareas
+                        </h2>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-zinc-500">Filtrar por etiqueta:</span>
+                            <input
+                                type="text"
+                                value={filterTag}
+                                onChange={(e) => setFilterTag(e.target.value)}
+                                placeholder="ej. urgente, trabajo..."
+                                className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-1.5 text-sm text-zinc-100 outline-none transition focus:border-cyan-400/50"
+                            />
+                            {filterTag && (
+                                <button onClick={() => setFilterTag("")} className="text-xs text-rose-400 hover:underline">Limpiar Filtro</button>
+                            )}
+                        </div>
                     </div>
                 </section>
 
