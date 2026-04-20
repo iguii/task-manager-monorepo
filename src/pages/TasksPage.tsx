@@ -14,28 +14,38 @@ const TasksPage = () => {
 
     const [text, setText] = react.useState("");
     const [description, setDescription] = react.useState("");
+    const [tags, setTags] = react.useState("");
     const [tasks, setTasks] = react.useState<Task[]>([]);
+    const [filterTag, setFilterTag] = react.useState("");
 
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(task => task.completed).length;
-    const pendingTasks = tasks.filter(task => !task.completed);
-    const completedTasksList = tasks.filter(task => task.completed);
+    const filteredTasks = filterTag 
+        ? tasks.filter(task => task.tags?.some(tag => tag.name.toLowerCase().includes(filterTag.toLowerCase())))
+        : tasks;
+
+    const totalTasks = filteredTasks.length;
+    const completedTasks = filteredTasks.filter(task => task.completed).length;
+    const pendingTasks = filteredTasks.filter(task => !task.completed);
+    const completedTasksList = filteredTasks.filter(task => task.completed);
 
     const fetchData = async() => {
         try{
             const fetchedData = await getTasks();
-            setTasks(fetchedData.data);
+            const tasksData = Array.isArray(fetchedData.data) ? fetchedData.data : [];
+            setTasks(tasksData);
         }catch (e) {
             console.error("Failed to fetch tasks: ", e );
         }
     }
 
-    const addTask = (title: string, desc: string) => {
+    const addTask = (title: string, desc: string, tagsInput: string) => {
         try {
-            createTask(title, desc).then((response) => {
+            const tagList = tagsInput.split(',').map(t => t.trim()).filter(t => t !== "");
+            
+            createTask(title, desc, tagList).then((response) => {
                 console.log("Task created: ", response.data);
                 setText("");
                 setDescription("");
+                setTags("");
                 fetchData();
             }).catch((error) => {
                 alert("Ocurrió un error inesperado, por favor intenta de nuevo más tarde.");
@@ -143,6 +153,27 @@ const TasksPage = () => {
                     </div>
                 </section>
 
+                <section className="mb-8">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <h2 className="text-xl font-semibold text-zinc-100">
+                            Tus Tareas
+                        </h2>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-zinc-500">Filtrar por etiqueta:</span>
+                            <input
+                                type="text"
+                                value={filterTag}
+                                onChange={(e) => setFilterTag(e.target.value)}
+                                placeholder="ej. urgente, trabajo..."
+                                className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-1.5 text-sm text-zinc-100 outline-none transition focus:border-cyan-400/50"
+                            />
+                            {filterTag && (
+                                <button onClick={() => setFilterTag("")} className="text-xs text-rose-400 hover:underline">Limpiar Filtro</button>
+                            )}
+                        </div>
+                    </div>
+                </section>
+
                 <section className="mb-10 rounded-3xl border border-zinc-800 bg-zinc-900/80 p-6 shadow-2xl">
                     <h2 className="mb-4 text-xl font-semibold text-zinc-100">
                         Crear Tarea
@@ -155,10 +186,12 @@ const TasksPage = () => {
                                 setText={setText}
                                 description={description}
                                 setDescription={setDescription}
+                                tags={tags}
+                                setTags={setTags}
                             />
                         </div>
                         <TaskInputBtn
-                            addTask={() => addTask(text, description)}
+                            addTask={() => addTask(text, description, tags)}
                         />
                     </div>
                 </section>
