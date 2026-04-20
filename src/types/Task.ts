@@ -1,11 +1,11 @@
-import type {Tag} from "./Tag.ts";
+import type { Tag } from "./Tag.ts";
 
-export type Task = {
-    id: number;
-    title: string;
-    description?: string;
-    completed: boolean;
-    createdAt: string;
-    updatedAt: string;
-    tags: Tag[];
+export interface Task {
+  id: number;
+  title: string;
+  description: string;
+  completed: boolean;
+  tags: Tag[];
+  createdAt?: string;
+  updatedAt?: string;
 }
