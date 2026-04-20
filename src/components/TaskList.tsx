@@ -1,4 +1,4 @@
-import type {Task} from "../types/Task.ts";
+import type { Task } from "../types";
 import TaskCard from "./TaskCard";
 
 type TaskListProps = {
