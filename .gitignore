@@ -1,0 +1,24 @@
+# Node
+**/node_modules/
+
+# Environment
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Build
+**/dist/
+**/build/
+
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Prisma generated client
+backend/generated/
