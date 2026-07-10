@@ -20,7 +20,7 @@ export const createTag = async (req: Request, res: Response) => {
 }
 
 export const readTags = async (req: Request, res: Response) => {
-    let statusCode = 200;
+    const statusCode = 200;
     const tags = await prisma.tag.findMany();
 
     return res.status(statusCode).json(tags);
@@ -28,7 +28,7 @@ export const readTags = async (req: Request, res: Response) => {
 
 export const updateTag = async (req: Request, res: Response) => {
     let statusCode = 200;
-    let id = parseInt(<string>req.params.id);
+    const id = parseInt(<string>req.params.id);
     let tag
 
     try {
@@ -52,7 +52,7 @@ export const updateTag = async (req: Request, res: Response) => {
 
 export const deleteTag = async (req: Request, res: Response) => {
     let statusCode = 200;
-    let id = parseInt(<string>req.params.id);
+    const id = parseInt(<string>req.params.id);
     let tag;
 
     try {
