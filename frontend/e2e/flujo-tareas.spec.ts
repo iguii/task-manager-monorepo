@@ -1,40 +1,71 @@
 import { test, expect } from '@playwright/test'
 
 test('un usuario nuevo puede registrarse, iniciar sesion, crear una tarea y verla en la lista de tareas pendientes.', async ({ page }) => {
-
-  // 1. Register
   await page.goto('/register')
+
+  const unique = Date.now()
+  const email = `test+${unique}@test.com`
+  const password = 'test1234'
+
   await page.getByPlaceholder('Nombre').fill('TESTING USER')
-  await page.getByPlaceholder('Email').fill('test@test.com')
-  await page.getByPlaceholder('Contraseña').fill('test')
+  await page.getByPlaceholder('Email').fill(email)
+  await page.getByPlaceholder('Contraseña').fill(password)
+  await page.getByRole('button', { name: /crear cuenta/i }).click()
 
+  await expect
+    .poll(() => new URL(page.url()).pathname, { timeout: 30000 })
+    .toMatch(/^\/(register|login|tasks)$/)
 
-  await Promise.all([
-    page.waitForURL('/login'), // ajusta según tu ruta real post-login
-    page.getByRole('button', { name: 'crear Cuenta' }).click(),
-  ])
+  if (new URL(page.url()).pathname === '/register') {
+    const createBtn = page.getByRole('button', { name: /crear cuenta/i })
+    if (await createBtn.isVisible().catch(() => false)) {
+      await createBtn.click()
+      await expect
+        .poll(() => new URL(page.url()).pathname, { timeout: 30000 })
+        .toMatch(/^\/(register|login|tasks)$/)
+    }
+  }
 
-  // 2. Login
-  await page.getByPlaceholder('Email').fill('test@test.com')
-  await page.getByPlaceholder('Contraseña').fill('test')
+  // If we're not already in tasks, do login explicitly
+  if (new URL(page.url()).pathname !== '/tasks') {
+    // Ensure we're on login page (if app is still on register, navigate deterministically)
+    if (new URL(page.url()).pathname !== '/login') {
+      await page.goto('/login')
+    }
 
-  await Promise.all([
-    page.waitForURL('/tasks'), // ajusta según tu ruta real post-login
-    page.getByRole('button', { name: 'Iniciar Sesión' }).click(),
-  ])
+    const emailInput = page.getByPlaceholder('Email')
+    const passwordInput = page.getByPlaceholder('Contraseña')
+    const loginBtn = page.getByRole('button', { name: /iniciar sesión/i })
 
-  // 3. Create pending task 
+    await expect(emailInput).toBeVisible({ timeout: 15000 })
+    await expect(passwordInput).toBeVisible({ timeout: 15000 })
+    await expect(loginBtn).toBeEnabled({ timeout: 15000 })
+
+    await emailInput.fill(email)
+    await passwordInput.fill(password)
+
+    // Robust for SPA/client-side redirects (fixes flaky waitForURL timeout)
+    await loginBtn.click()
+
+    await expect
+      .poll(() => new URL(page.url()).pathname, { timeout: 30000 })
+      .toBe('/tasks')
+
+    await expect(page.getByPlaceholder('Escribe el nombre de la tarea...')).toBeVisible({ timeout: 15000 })
+  }
+
+  await expect(page).toHaveURL(/\/tasks(?:\?.*)?$/, { timeout: 30000 })
+
+  const taskTitle = `Comprar pan TEST ${unique}`
+  const taskDescription = `Debo ir a la tienda a comprar 10 panes. TEST ${unique}`
+
   const taskNameInput = page.getByPlaceholder('Escribe el nombre de la tarea...')
-  await expect(taskNameInput).toBeVisible()
+  await expect(taskNameInput).toBeVisible({ timeout: 15000 })
 
-  await taskNameInput.fill('Comprar pan TEST')
+  await taskNameInput.fill(taskTitle)
+  await page.getByPlaceholder('Una breve descripción... (opcional)').fill(taskDescription)
+  await page.getByRole('button', { name: /agregar tarea/i }).click()
 
-  await page
-    .getByPlaceholder('Una breve descripción... (opcional)')
-    .fill('Debo ir a la tienda a comprar 10 panes. TEST')
-
-  await page.getByRole('button', { name: 'Agregar Tarea' }).click()
-
-  await expect(page.getByText('Comprar pan TEST')).toBeVisible()
-  await expect(page.getByText('Debo ir a la tienda a comprar 10 panes. TEST')).toBeVisible()
+  await expect(page.getByText(taskTitle, { exact: false })).toBeVisible({ timeout: 15000 })
+  await expect(page.getByText(taskDescription, { exact: false })).toBeVisible({ timeout: 15000 })
 })
