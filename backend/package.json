@@ -8,7 +8,7 @@
     "test": "vitest run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build": "eslint ."
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
