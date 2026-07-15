@@ -10,6 +10,9 @@
 **/dist/
 **/build/
 
+# vitest coverage
+**/coverage/
+
 # IDE
 .idea/
 .vscode/
