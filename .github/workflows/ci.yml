@@ -90,6 +90,11 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
 
+      - name: Pruebas e2e con Playwright
+        working-directory: ./frontend
+        run: |
+          npx playwright test --project chromium
+
       - name: Mostrar logs si falla
         if: failure()
         run: docker compose logs
