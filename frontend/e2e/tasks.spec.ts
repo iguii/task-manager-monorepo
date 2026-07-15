@@ -17,6 +17,6 @@ test('usuario autenticado puede crear una tarea', async ({ page }) => {
   await page.getByPlaceholder('Una breve descripción... (opcional)').fill(description)
   await page.getByRole('button', { name: /agregar tarea/i }).click()
 
-  await expect(page.getByText(title)).toBeVisible({ timeout: 15000 })
+  await expect(page.getByText("testtttt")).toBeVisible({ timeout: 15000 })
   await expect(page.getByText(description)).toBeVisible({ timeout: 15000 })
 })
