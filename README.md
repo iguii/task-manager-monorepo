@@ -41,6 +41,7 @@ If it's your first time using it, you need to sign up before logging in.
 `.env` configuration example:
 
 ```
+#Example configuration
 # PostgreSQL
 POSTGRES_DB=taskmanagerfinal
 POSTGRES_USER=postgres
@@ -55,5 +56,4 @@ JWT_EXPIRES_IN=1d
 
 # Frontend
 FRONTEND_PORT=5173
-VITE_API_URL=http://localhost:3000/api/v1
 ```
