@@ -24,10 +24,6 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@db:5432/taskmanagerfinal?schema=public}
       JWT_SECRET: ${JWT_SECRET:-super_secret_key}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
-    command: >
-      sh -c "npx prisma generate &&
-             npx prisma migrate deploy &&
-             npm run dev"
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     volumes:
