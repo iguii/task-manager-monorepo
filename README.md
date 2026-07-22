@@ -21,7 +21,7 @@ for easy management of tasks.
 ## Running the application
 
 ```sh
-docker compose up -d
+docker compose up --build -d
 ```
 
 Wait for **backend, frontend and db** services to initialize and start running.
