@@ -1,5 +1,5 @@
-import {Router} from "express";
-import {createTag, deleteTag, readTags, updateTag} from "../controllers/tag.controller";
+import { Router } from "express";
+import { createTag, deleteTag, readTags, updateTag } from "../controllers/tag.controller.js";
 
 const router = Router();
 
