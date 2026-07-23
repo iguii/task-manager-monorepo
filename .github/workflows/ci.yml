@@ -97,7 +97,7 @@ jobs:
         run: docker compose down -v
 
   migraciones:
-    name: Migaraciones y Seeds
+    name: Migraciones y Seeds
     runs-on: ubuntu-latest
     services:
       postgres:
