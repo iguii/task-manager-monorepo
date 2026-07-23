@@ -7,7 +7,7 @@ on:
       branches: [main]
   workflow_dispatch:
     inputs:
-      confrimacion:
+      confirmacion:
         description: 'Escribe DEPLOY_NOW para confirmar el despliegue a produccion'
         required: true
 
