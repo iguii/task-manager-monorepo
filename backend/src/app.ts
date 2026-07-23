@@ -15,7 +15,7 @@ app.use(express.json());
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Server is healthy, eating vegetables.",
+    message: "Server is healthy",
   })
 })
 
